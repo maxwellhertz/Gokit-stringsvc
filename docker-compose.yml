@@ -1,0 +1,69 @@
+version: "3.7"
+
+services:
+  consul:
+    image: consul
+    command: agent -server -bootstrap -ui -client=0.0.0.0
+    ports:
+      - 8500:8500
+      - 8600:8600/udp
+    networks: 
+      - gokit
+  stringsvc1:
+    image: stringsvc
+    depends_on: 
+      - consul
+    environment:
+      - HOST=stringsvc1
+      - LISTEN=:8001
+      - PREFIX=/stringsvc
+      - CONSUL_SERVER=consul:8500
+      - SERVICE=stringsvc
+    ports:
+      - 8001
+    networks:
+      - gokit
+  stringsvc2:
+    image: stringsvc
+    depends_on: 
+      - consul
+    environment:
+      - HOST=stringsvc2
+      - LISTEN=:8002
+      - PREFIX=/stringsvc
+      - CONSUL_SERVER=consul:8500
+      - SERVICE=stringsvc
+    ports:
+      - 8002
+    networks:
+      - gokit
+  stringsvc3:
+    image: stringsvc
+    depends_on: 
+      - consul
+    environment:
+      - HOST=stringsvc3
+      - LISTEN=:8003
+      - PREFIX=/stringsvc
+      - CONSUL_SERVER=consul:8500
+      - SERVICE=stringsvc
+    ports:
+      - 8003
+    networks:
+      - gokit
+  stringclient:
+    image: stringclient
+    depends_on: 
+      - consul
+    environment:
+      - LISTEN=:8080
+      - CONSUL_SERVER=consul:8500
+      - PREFIX=/stringsvc
+      - SERVICE=stringsvc
+    ports:
+      - 8081:8080
+    networks:
+      - gokit
+
+networks:
+  gokit:
